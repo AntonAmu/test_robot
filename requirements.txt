@@ -1,1 +1,2 @@
 rpaframework==12.4.1
+logging==0.4.9.6
