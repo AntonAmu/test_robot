@@ -63,11 +63,11 @@ class Bot:
         self.browser.click_element(element_to_click)
         self.browser.wait_until_element_is_visible(DETAIL_TABLE, timeout=TIMEOUT)
         self.browser.select_from_list_by_value(SELECT_ELEMENT, SELECT_OPTION)
-        self.browser.wait_until_page_contains_element(PAGINATOR, timeout=TIMEOUT)
+        self.browser.wait_until_page_does_not_contain_element(PAGINATOR, timeout=TIMEOUT)
         return self.browser.find_elements(TABLE_CELL)
 
     def get_data_from_table_elements(self):
-        return [element.text for element in self.elemts_from_table_for_agency()]
+        return [element.text.strip() for element in self.elemts_from_table_for_agency()]
 
     def get_url_for_downloading(self):
         return [element.get_attribute('href') for element in self.browser.find_elements(ELEMENT_IN_TABLE_WITH_URL)]
