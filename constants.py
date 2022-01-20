@@ -8,11 +8,9 @@ MAIN_PAGE_URL = "https://itdashboard.gov/"
 ELEMENT_FOR_CLICK_IN_MAIN_PAGE = '#home-dive-in'
 PARSED_ELEMENT_ON_MAIN_PAGE = '//div[@class="col-sm-4 text-center noUnderline"]'
 TIMEOUT = 300
-COLUMNS_FOR_MAIN_PAGE_TABLE = ['Agency name', 'Total']
-COLUMNS_FOR_DETAIL_PAGE_TABLE = ['UII', 'Bureau', 'Investment Title', 'Total FY2021 Spending($M)',
-                                 'Type', 'CIO Rating', '#of Projects'
-                                 ]
+INITIAL_COLUMN_FOR_MAIN_PAGE_TABLE = ['Agency name']
 DETAIL_TABLE = '//*[@id="investments-table-object_wrapper"]'
+HEAD_TABLE = '//*[@class="datasource-table usa-table-borderless dataTable no-footer"]'
 SELECT_ELEMENT = '//*[@id="investments-table-object_length"]/label/select'
 SELECT_OPTION = '-1'
 PAGINATOR = '//*[@id="investments-table-object_paginate"]/span/a[2]'

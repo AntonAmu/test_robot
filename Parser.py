@@ -1,7 +1,7 @@
 from RPA.Browser.Selenium import Selenium
 from constants import (AGENCY_NAME, MAIN_PAGE_URL, ELEMENT_FOR_CLICK_IN_MAIN_PAGE, DOWNLOAD_DIRECTORY,
                        PARSED_ELEMENT_ON_MAIN_PAGE, TIMEOUT, DETAIL_TABLE, SELECT_ELEMENT,
-                       SELECT_OPTION, PAGINATOR, ELEMENT_IN_TABLE_WITH_URL, TABLE
+                       SELECT_OPTION, PAGINATOR, ELEMENT_IN_TABLE_WITH_URL, TABLE, HEAD_TABLE
                        )
 
 
@@ -30,5 +30,5 @@ class Parser:
         self.browser.wait_until_element_is_visible(DETAIL_TABLE, timeout=TIMEOUT)
         self.browser.select_from_list_by_value(SELECT_ELEMENT, SELECT_OPTION)
         self.browser.wait_until_page_does_not_contain_element(PAGINATOR, timeout=TIMEOUT)
-        return self.browser.find_element(TABLE)
+        return self.browser.find_element(TABLE), self.browser.find_element(HEAD_TABLE)
 
