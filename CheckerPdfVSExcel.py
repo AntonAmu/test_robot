@@ -1,5 +1,4 @@
 from PdfHandler import PdfHandler
-import time
 import logging
 from constants import (ANSWER_IF_NO_MATCH, ANSWER_IF_NAME_OF_INVESTMENT_DOESNT_MATCH,
                        ANSWER_IF_UII_DOESNT_MATCH, ANSWER_IF_MATCH)
@@ -16,10 +15,7 @@ class CheckerPdfVsExcel:
         Compares datas from pdf files with excel file.
         Return string.
         """
-        start = time.perf_counter()
         data_from_pdfs = self.pdf_handler.get_data_from_pdf_files()
-        period = time.perf_counter() - start
-        print(f"parse pdf takes {period}")
         uii = self.table.get_column(0).values()
         name = self.table.get_column(2).values()
         dict_from_excel_uii_key = dict(zip(uii, name))

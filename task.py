@@ -7,7 +7,6 @@ from Parser import Parser
 from CheckerPdfVSExcel import CheckerPdfVsExcel
 from constants import DOWNLOAD_DIRECTORY, COLUMNS_FOR_MAIN_PAGE_TABLE, COLUMNS_FOR_DETAIL_PAGE_TABLE, MAIN_PAGE_URL
 import logging
-import time
 
 
 logging.basicConfig(filename=f'{DOWNLOAD_DIRECTORY}/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -36,7 +35,6 @@ class Bot:
         Returns Dict with elements to click in order to get detail info
         and Table structure.
         """
-        start = time.perf_counter()
         elements_for_agencies = {}
         rows = []
         for element in elements:
@@ -48,16 +46,13 @@ class Bot:
             row.append(agency)
             row.append(convert_ammount(total))
             rows.append(row)
-        period = time.perf_counter() - start
-        print(f'form data to excel main in {period}')
         return elements_for_agencies, Table(rows, columns=COLUMNS_FOR_MAIN_PAGE_TABLE)
 
     @staticmethod
     def get_detail_table(html_table):
-        """Parses and returns the given HTML table as a Table structure.
-        :param html_table: Table HTML markup.
+        """Parses and returns the given HTML table as a Table structure and list of urls.
+        :param html_table: Table HTML markup, list.
         """
-        start = time.perf_counter()
         table_rows = []
         urls_for_downloading = []
         html_table = html_table.get_attribute('innerHTML')
@@ -72,8 +67,6 @@ class Bot:
                 for cell in cells:
                     cell_values.append(cell.text.strip())
                 table_rows.append(cell_values)
-        period = time.perf_counter() - start
-        print(f'form data to excel detail in {period}')
         return Table(table_rows, COLUMNS_FOR_DETAIL_PAGE_TABLE), urls_for_downloading
 
     def download_pdfs(self, urls):
@@ -84,27 +77,12 @@ class Bot:
             self.downloader_pdf_file.download_pdf(self.parser.browser)
 
     def task(self):
-        start = time.perf_counter()
         self.elements_for_agencies, main_page_table = self.form_data_from_main_page(self.parser.parse_table_from_main_page())
-        period = time.perf_counter() - start
-        print(f"parse main page in {period}")
-        start = time.perf_counter()
         self.excel_handler.write_data_to_new_worksheet(main_page_table, 'Agencies')
-        period = time.perf_counter() - start
-        print(f"write to excel main page in {period}")
-        start = time.perf_counter()
         detail_info, urls_for_downloading = self.get_detail_table(self.parser.parse_element_from_details_page(self.elements_for_agencies))
         self.excel_handler.write_data_to_new_worksheet(detail_info, 'Individual Investments')
-        period = time.perf_counter() - start
-        print(f"write to excel detail page in {period}")
-        start = time.perf_counter()
         self.download_pdfs(urls_for_downloading)
-        period = time.perf_counter() - start
-        print(f"downloads in {period}")
-        start = time.perf_counter()
         self.checker_pdf_vs_excel(detail_info).compare_pdf_with_excel()
-        period = time.perf_counter() - start
-        print(f"compare in {period}")
 
 
 def main():
