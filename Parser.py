@@ -15,7 +15,7 @@ class Parser:
         Returns list of webelements.
         """
         self.browser.open_headless_chrome_browser(MAIN_PAGE_URL)
-        self.browser.click_element(ELEMENT_FOR_CLICK_IN_MAIN_PAGE)
+        self.browser.click_link(ELEMENT_FOR_CLICK_IN_MAIN_PAGE)
         self.browser.wait_until_element_is_visible(PARSED_ELEMENT_ON_MAIN_PAGE)
         list_of_elements = self.browser.find_elements(PARSED_ELEMENT_ON_MAIN_PAGE)
         return list_of_elements
@@ -32,8 +32,3 @@ class Parser:
         self.browser.wait_until_page_does_not_contain_element(PAGINATOR, timeout=TIMEOUT)
         return self.browser.find_element(TABLE)
 
-    @property
-    def url_for_downloading(self):
-        """Returns list of urls for downloading pdf.
-        """
-        return [element.get_attribute('href') for element in self.browser.find_elements(ELEMENT_IN_TABLE_WITH_URL)]

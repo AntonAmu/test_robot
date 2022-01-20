@@ -3,11 +3,15 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 DOWNLOAD_DIRECTORY = Path(BASE_DIR, 'output')
-AGENCY_NAME = 'Department of Agriculture'
+AGENCY_NAME = 'National Archives and Records Administration'
 MAIN_PAGE_URL = "https://itdashboard.gov/"
-ELEMENT_FOR_CLICK_IN_MAIN_PAGE = '//*[@id="node-23"]'
-PARSED_ELEMENT_ON_MAIN_PAGE = '//div[@class="col-sm-4 text-center noUnderline"]/div[1]/div[1]/div[1]/div[1]/a'
+ELEMENT_FOR_CLICK_IN_MAIN_PAGE = '#home-dive-in'
+PARSED_ELEMENT_ON_MAIN_PAGE = '//div[@class="col-sm-4 text-center noUnderline"]'
 TIMEOUT = 300
+COLUMNS_FOR_MAIN_PAGE_TABLE = ['Agency name', 'Total']
+COLUMNS_FOR_DETAIL_PAGE_TABLE = ['UII', 'Bureau', 'Investment Title', 'Total FY2021 Spending($M)',
+                                 'Type', 'CIO Rating', '#of Projects'
+                                 ]
 DETAIL_TABLE = '//*[@id="investments-table-object_wrapper"]'
 SELECT_ELEMENT = '//*[@id="investments-table-object_length"]/label/select'
 SELECT_OPTION = '-1'

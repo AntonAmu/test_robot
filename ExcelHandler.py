@@ -12,5 +12,5 @@ class ExcelHandler(Files):
         Create a new sheet in excel file and writes data to this sheet.
         """
         self.create_worksheet(worksheet)
-        self.append_rows_to_worksheet(data_to_excel)
+        self.append_rows_to_worksheet(data_to_excel, header=True)
         self.save_workbook()
