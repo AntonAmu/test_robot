@@ -1,8 +1,5 @@
-from pathlib import Path
-
-
-BASE_DIR = Path(__file__).resolve().parent
-DOWNLOAD_DIRECTORY = Path(BASE_DIR, 'output')
+DOWNLOAD_DIRECTORY = 'output'
+EXCEL_FILE = 'agencies.xlsx'
 AGENCY_NAME = 'National Archives and Records Administration'
 MAIN_PAGE_URL = "https://itdashboard.gov/"
 ELEMENT_FOR_CLICK_IN_MAIN_PAGE = '#home-dive-in'

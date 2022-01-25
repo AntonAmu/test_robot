@@ -1,11 +1,10 @@
-from pathlib import Path
+from RPA.FileSystem import FileSystem
 from DownloaderPdfFile import DownloaderPdfFile
 from ExcelHandler import ExcelHandler
-from bs4 import BeautifulSoup
 from RPA.Tables import Table
 from Parser import Parser
 from CheckerPdfVSExcel import CheckerPdfVsExcel
-from constants import DOWNLOAD_DIRECTORY, MAIN_PAGE_URL, INITIAL_COLUMN_FOR_MAIN_PAGE_TABLE
+from constants import DOWNLOAD_DIRECTORY, MAIN_PAGE_URL, INITIAL_COLUMN_FOR_MAIN_PAGE_TABLE, EXCEL_FILE
 import logging
 
 
@@ -22,11 +21,12 @@ def convert_ammount(amount):
 class Bot:
 
     def __init__(self):
-        self.downloader_pdf_file = DownloaderPdfFile
-        self.parser = Parser()
-        self.excel_handler = ExcelHandler(str(Path(DOWNLOAD_DIRECTORY, 'agencies.xlsx')))
+        self.file_system = FileSystem()
+        self.downloader_pdf_file = DownloaderPdfFile()
+        self.parser = Parser(self.file_system.absolute_path(DOWNLOAD_DIRECTORY))
         self.elements_for_agencies = None
-        self.checker_pdf_vs_excel = CheckerPdfVsExcel
+        self.checker_pdf_vs_excel = CheckerPdfVsExcel()
+        self.excel_handler = ExcelHandler(self.file_system.join_path(DOWNLOAD_DIRECTORY,EXCEL_FILE))
 
     @staticmethod
     def form_data_from_main_page(elements):
@@ -51,51 +51,54 @@ class Bot:
             header.append(info[1])
         return elements_for_agencies, Table(rows, columns=header)
 
-    @staticmethod
-    def transform_table_webelement_to_beatifulsoup_object(element):
-            """
-            Get webelement retrieve inner html.
-            Returns Beatifulsoup object.
-            """
-            html_table = element.get_attribute('innerHTML')
-            return BeautifulSoup(html_table, "html.parser")
 
-    def get_detail_table(self, html_table, head_table):
+    def handle_with_detail_table(self, html_table, head_table):
         """
-        Parses and returns the given HTML table as a Table structure and list of urls.
-        :param html_table: Table HTML markup, list.
+        Parses and returns the given HTML table as a Table structure.
+        For each row in table parses reference to pdf file is exist.
+        If reference exists then downloads pdf file and compare uii and 
+        investment title in pdf with appropriate values in table.
+        Result of comparison logs to file app.log in directory output. 
+        :param html_table: Table HTML markup.
         """
         table_rows = []
-        urls_for_downloading = []
-        soup_table = self.transform_table_webelement_to_beatifulsoup_object(html_table)
-        soup_head = self.transform_table_webelement_to_beatifulsoup_object(head_table)
-        for table_row in soup_table.select('tr'):
-            link = table_row.find('a')
-            if link:
-                urls_for_downloading.append(MAIN_PAGE_URL + link.get('href'))
-            cells = table_row.find_all('td')
-            if len(cells) > 0:
-                cell_values = []
-                for cell in cells:
-                    cell_values.append(cell.text.strip())
-                table_rows.append(cell_values)
-        return Table(table_rows, [th.text for th in soup_head.find_all('th')]), urls_for_downloading
+        head_table = head_table.find_elements_by_tag_name('th')
+        
+        for table_row in html_table.find_elements_by_tag_name('tr'):
+                        
+            cells = table_row.find_elements_by_tag_name('td')
 
-    def download_pdfs(self, urls):
-        """Gets list of urls and downloads pdf files for each url.
+            if len(cells) > 0:
+                row = []
+                for cell in cells:
+                    row.append(cell.text.strip())
+            
+            link = table_row.find_elements_by_tag_name('a')
+            
+            if link:
+                url_for_downloading = link[0].get_attribute('href')
+                file = self.download_pdf(url_for_downloading)
+                self.checker_pdf_vs_excel.compare_pdf_with_excel(row, file)
+            table_rows.append(row)
+        
+        return Table(table_rows, [th.text for th in head_table])
+
+    def download_pdf(self, url):
         """
-        for url in urls:
-            self.parser.browser.go_to(url)
-            self.downloader_pdf_file.download_pdf(self.parser.browser)
+        Gets url and downloads pdf file.
+        """
+        self.parser.open_window(url)
+        file = self.downloader_pdf_file.download_pdf(self.parser.browser, self.file_system)
+        self.parser.close_window()
+        return file
 
     def task(self):
         self.elements_for_agencies, main_page_table = self.form_data_from_main_page(self.parser.parse_table_from_main_page())
         self.excel_handler.write_data_to_new_worksheet(main_page_table, 'Agencies')
         html_table, head_table = self.parser.parse_element_from_details_page(self.elements_for_agencies)
-        detail_info, urls_for_downloading = self.get_detail_table(html_table, head_table)
+        detail_info = self.handle_with_detail_table(html_table, head_table)
         self.excel_handler.write_data_to_new_worksheet(detail_info, 'Individual Investments')
-        self.download_pdfs(urls_for_downloading)
-        self.checker_pdf_vs_excel(detail_info).compare_pdf_with_excel()
+
 
 
 def main():
