@@ -16,7 +16,7 @@ class Parser:
         Opens headless browser, reveal information about agencies.
         Returns list of webelements.
         """
-        self.browser.open_available_browser(MAIN_PAGE_URL)
+        self.browser.open_headless_chrome_browser(MAIN_PAGE_URL)
         self.browser.click_link(ELEMENT_FOR_CLICK_IN_MAIN_PAGE)
         self.browser.wait_until_element_is_visible(PARSED_ELEMENT_ON_MAIN_PAGE)
         list_of_elements = self.browser.find_elements(PARSED_ELEMENT_ON_MAIN_PAGE)
