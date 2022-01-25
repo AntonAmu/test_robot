@@ -22,7 +22,6 @@ class CheckerPdfVsExcel:
         dict_from_excel_uii_key = {uii: name}
         dict_from_excel_name_key = {name: uii}
         result = self.compare_values(data_from_pdf, dict_from_excel_uii_key, dict_from_excel_name_key)
-        logging.info(result)
         return result
 
     @staticmethod

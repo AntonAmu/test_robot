@@ -78,7 +78,8 @@ class Bot:
             if link:
                 url_for_downloading = link[0].get_attribute('href')
                 file = self.download_pdf(url_for_downloading)
-                self.checker_pdf_vs_excel.compare_pdf_with_excel(row, file)
+                result = self.checker_pdf_vs_excel.compare_pdf_with_excel(row, file)
+                logging.info(result)
             table_rows.append(row)
         
         return Table(table_rows, [th.text for th in head_table])
